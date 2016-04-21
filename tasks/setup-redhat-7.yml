@@ -1,0 +1,12 @@
+---
+- name: set keymap
+  command: localectl set-keymap {{ system.keymap }}
+  sudo: yes
+
+- name: set locale
+  command: localectl set-locale LANG={{ system.lang }}
+  sudo: yes
+
+- name: set timezone
+  command: timedatectl set-timezone {{ system.timezone }}
+  sudo: yes

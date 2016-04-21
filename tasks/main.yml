@@ -1,0 +1,21 @@
+---
+- name: disabled SELinux
+  selinux: state=disabled
+  sudo: true
+
+- include: setup-redhat-6.yml
+  sudo: true
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version|int == 6
+
+- include: setup-redhat-7.yml
+  sudo: true
+  when: ansible_os_family == "RedHat" and ansible_distribution_major_version|int == 7
+
+- name: change hostname
+  hostname: name={{ hostname }}
+  sudo: true
+  when: hostname is defined
+
+- name: Upgrade all packages
+  yum: name=* state=latest
+  sudo: true

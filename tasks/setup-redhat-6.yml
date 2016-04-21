@@ -1,0 +1,45 @@
+---
+- name: set keymap
+  copy: src=etc/sysconfig/keyboard 
+        dest=/etc/sysconfig/keyboard 
+        owner=root 
+        group=root 
+        mode=0644
+  sudo: yes
+
+- name: set locale
+  copy: src=etc/sysconfig/i18n
+        dest=/etc/sysconfig/i18n
+        owner=root
+        group=root
+        mode=0644
+  sudo: yes
+
+- shell: . /etc/sysconfig/i18n
+  sudo: yes
+
+- name: check current timezone
+  shell: awk -F\" '{ print $2}' /etc/sysconfig/clock
+  sudo: yes
+  register: current_zone
+  changed_when: false
+
+- name: set UTC timezone
+  shell: \cp -f /usr/share/zoneinfo/{{ system.timezone }} /etc/localtime
+  sudo: yes
+  when: current_zone.stdout != '{{ system.timezone }}'
+
+- name: get current timezone
+  command: grep -Po 'ZONE="\K(.+?)(?=")' /etc/sysconfig/clock
+  sudo: yes
+  register: clock_current_timezone_r
+  changed_when: false
+
+- set_fact: clock_current_timezone={{ clock_current_timezone_r.stdout }}
+  sudo: yes
+
+- name: write timezone to /etc/sysconfig/clock
+  template: src=clock.j2 dest=/etc/sysconfig/clock
+  sudo: yes
+  when: clock_current_timezone != '{{ system.timezone }}'
+
