@@ -1,12 +1,15 @@
 ---
-- name: set keymap
+- name: "キーマップを {{ system.keymap }} に設定 "
   command: localectl set-keymap {{ system.keymap }}
-  sudo: yes
+  become: yes
+  tags: [os-setup] 
 
-- name: set locale
+- name: "ロケールを {{ system.lang }} に設定"
   command: localectl set-locale LANG={{ system.lang }}
-  sudo: yes
+  become: yes
+  tags: [os-setup]
 
-- name: set timezone
+- name: "タイムゾーンを {{ system.timezone }} に設定"
   command: timedatectl set-timezone {{ system.timezone }}
-  sudo: yes
+  become: yes
+  tags: [os-setup]

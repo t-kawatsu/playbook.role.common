@@ -5,7 +5,7 @@
         owner=root 
         group=root 
         mode=0644
-  sudo: yes
+  become: yes
 
 - name: set locale
   copy: src=etc/sysconfig/i18n
@@ -13,33 +13,33 @@
         owner=root
         group=root
         mode=0644
-  sudo: yes
+  become: yes
 
 - shell: . /etc/sysconfig/i18n
-  sudo: yes
+  become: yes
 
 - name: check current timezone
   shell: awk -F\" '{ print $2}' /etc/sysconfig/clock
-  sudo: yes
+  become: yes
   register: current_zone
   changed_when: false
 
 - name: set UTC timezone
   shell: \cp -f /usr/share/zoneinfo/{{ system.timezone }} /etc/localtime
-  sudo: yes
+  become: yes
   when: current_zone.stdout != '{{ system.timezone }}'
 
 - name: get current timezone
   command: grep -Po 'ZONE="\K(.+?)(?=")' /etc/sysconfig/clock
-  sudo: yes
+  become: yes
   register: clock_current_timezone_r
   changed_when: false
 
 - set_fact: clock_current_timezone={{ clock_current_timezone_r.stdout }}
-  sudo: yes
+  become: yes
 
 - name: write timezone to /etc/sysconfig/clock
   template: src=clock.j2 dest=/etc/sysconfig/clock
-  sudo: yes
+  become: yes
   when: clock_current_timezone != '{{ system.timezone }}'
 
