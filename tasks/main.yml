@@ -12,6 +12,10 @@
   become: yes
   when: ansible_os_family == "RedHat" and ansible_distribution_major_version|int == 7
 
+- import_tasks: setup-amazon-2.yml
+  become: yes
+  when: ansible_product_version | match("amazon")
+
 - name: "ホスト名を {{ hostname }} に設定"
   hostname: name={{ hostname }}
   become: yes
